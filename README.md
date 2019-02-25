@@ -1,4 +1,4 @@
 # Scrapper-MangaEden
 
-## NOT FUNCTIONNAL 
+## NOT FUNCTIONAL 
 ## WORK IN PROGRESS....
