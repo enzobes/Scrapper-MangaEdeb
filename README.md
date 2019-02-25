@@ -1,1 +1,4 @@
 # Scrapper-MangaEdeb
+
+NOT FUNCTIONNAL 
+WORK IN PROGRESS....
