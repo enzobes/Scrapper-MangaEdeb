@@ -1,6 +1,6 @@
 MANGANAME=$1
 CHAPTER=$2
-baseDir=/home/Scrapper-MangaEden
+baseDir=/home/Scrapper-MangaEdeb
 currDir=$PWD
 URL_JSON=https://www.mangaeden.com/api/list/0/
 
@@ -15,8 +15,8 @@ fi
 if [ ! -f /home/Scrapper-MangaEden/data/manga.json ]; then
        echo "Data JSON not found"
        echo "Downloading..."
-       mkdir data
-       wget $URL_JSON -O data/manga.json
+       mkdir -p data
+       wget -nc $URL_JSON -O data/manga.json
 fi
 
 echo "SCRAPPER FOR MANGAEDEN BY CHAPTER" 
@@ -25,15 +25,37 @@ echo "Downloading: $MANGANAME"
 echo "---------------------------------"
 
 dirManga=$currDir/$MANGANAME
+mkdir -p $MANGANAME
+#cd $dirManga
 
-cd $dirManga
+
+mangaeden_link="https://www.mangaeden.com/en/en-manga/$MANGANAME/$2/1"
+
+echo $mangaeden_link
+
+manga=$(cat data/manga.json | jq -r '.manga[]' | grep $MANGANAME -A 15 | grep '"i"' | tr -d '",')
+
+a=($manga)
+ID=(${a[1]})
+
+chapter_link_api="https://www.mangaeden.com/api/manga/$ID/"
 
 
-download_link="https://www.mangaeden.com/en/en-manga/$MANGANAME/$2/1"
-echo $download_link
+if [ ! -f /home/Scrapper-MangaEden/data/$MANGANAME/chapters.json ]; then
+       echo "Data JSON not found"
+       echo "Downloading..."
+       mkdir -p data/$MANGANAME
+       wget -nc $chapter_link_api -O data/$MANGANAME/chapters.json
+fi
 
-var=$(cat data/manga.json | jq -r '.manga[]' | grep $MANGANAME -A 15 | grep '"i"' | tr -d '",')
+total_chapters=$(cat data/solo-leveling/chapters.json | jq -r '.chapters[0]' | head -2 | grep ',' | tr -d ",")
+#echo $total_chapters
+nb_chap_choose=$((total_chapters-CHAPTER-1))
+#echo $CHAPTER
+echo "---------------------------------"
+echo "DOWNLOAD CHAPTER:" $CHAPTER
+echo "---------------------------------"
+echo "Chapter in JSON Array : "$nb_chap_choose
 
-a=($var)
-echo ${a[1]}
-
+chapter_id=$(cat data/$MANGANAME/chapters.json | jq -r '.chapters['$nb_chap_choose']')
+echo $chapter_id
