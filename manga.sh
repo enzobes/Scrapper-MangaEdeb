@@ -36,9 +36,9 @@ echo $mangaeden_link
 manga=$(cat data/manga.json | jq -r '.manga[]' | grep $MANGANAME -A 15 | grep '"i"' | tr -d '",')
 
 a=($manga)
-ID=(${a[1]})
+id_manga=(${a[1]})
 
-chapter_link_api="https://www.mangaeden.com/api/manga/$ID/"
+chapter_link_api="https://www.mangaeden.com/api/manga/$id_manga/"
 
 
 if [ ! -f /home/Scrapper-MangaEden/data/$MANGANAME/chapters.json ]; then
@@ -48,7 +48,7 @@ if [ ! -f /home/Scrapper-MangaEden/data/$MANGANAME/chapters.json ]; then
        wget -nc $chapter_link_api -O data/$MANGANAME/chapters.json
 fi
 
-total_chapters=$(cat data/solo-leveling/chapters.json | jq -r '.chapters[0]' | head -2 | grep ',' | tr -d ",")
+total_chapters=$(cat data/$MANGANAME/chapters.json | jq -r '.chapters[0]' | head -2 | grep ',' | tr -d ",")
 #echo $total_chapters
 nb_chap_choose=$((total_chapters-CHAPTER-1))
 #echo $CHAPTER
@@ -58,4 +58,12 @@ echo "---------------------------------"
 echo "Chapter in JSON Array : "$nb_chap_choose
 
 chapter_id=$(cat data/$MANGANAME/chapters.json | jq -r '.chapters['$nb_chap_choose']')
-echo $chapter_id
+#echo $chapter_id
+id_chapter=$( cat data/$MANGANAME/chapters.json | jq -r '.chapters['$nb_chap_choose']' | tail -2 | tr -d '"] ')
+
+#echo $id_chapter
+
+chapter_link_api="https://www.mangaeden.com/api/chapter/$id_chapter"
+echo $chapter_link_api
+
+#TODO: AJOUTER EXCEPTIONS SI LE CHAPITRE N'EXISTE PAS 
